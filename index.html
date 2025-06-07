@@ -16,6 +16,8 @@
         <p id="highScore">High Score: 0</p>
         <p id="milestoneMsg"></p>
       </div>
+      <!-- Restart Button (Hidden Initially) -->
+      <button id="restartBtn" class="hidden">Restart</button>
     </div>
     <div class="controls">
       <button id="pauseBtn" tabindex="0">Pause</button>
@@ -24,8 +26,24 @@
     </div>
     <button id="followBtn" tabindex="0">Follow me on Instagram</button>
   </div>
+
+  <script>
+    // Optional: Trigger landscape orientation if available
+    document.getElementById("fullscreenBtn").addEventListener("click", () => {
+      const wrapper = document.getElementById("gameWrapper");
+
+      if (!document.fullscreenElement && wrapper.requestFullscreen) {
+        wrapper.requestFullscreen().then(() => {
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock("landscape").catch(() => {});
+          }
+        });
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    });
+  </script>
+
   <script src="game.js"></script>
 </body>
 </html>
-
-
