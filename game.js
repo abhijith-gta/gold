@@ -33,31 +33,35 @@ const player = {
   width: 30,
   height: 30,
   velocityY: 0,
-  grounded: false
+  grounded: false,
 };
 
 const groundHeight = 50;
 let obstacles = [];
 
-// Adjusted createObstacle with dynamic gap for early game
+function getGap() {
+  const maxGap = 250;
+  const minGap = 150;
+  const gapDecreaseRate = 5;
+  let gap = maxGap - (score / 10) * gapDecreaseRate;
+  return Math.max(minGap, gap);
+}
+
 function createObstacle() {
   const height = Math.random() * 60 + 30;
-
-  // Wider gap for early obstacles (score < 10)
-  let gap = score < 10 ? 250 : 150;
-
+  const gap = getGap();
   obstacles.push({
     x: canvas.width + gap,
     y: canvas.height - groundHeight - height,
     width: 25,
-    height: height
+    height: height,
   });
 }
 
 function resizeCanvas() {
   let container = document.getElementById("gameWrapper");
   let width = container.clientWidth;
-  let height = width * 2 / 3;
+  let height = (width * 2) / 3;
   canvas.width = BASE_WIDTH;
   canvas.height = BASE_HEIGHT;
   canvas.style.width = width + "px";
@@ -71,6 +75,7 @@ function resetGame() {
   player.velocityY = 0;
   obstacles = [];
   gameOver = false;
+  gameStarted = false;
   milestoneShown = false;
   scoreEl.textContent = "Score: 0";
   highScoreEl.textContent = `High Score: ${highScore}`;
@@ -92,13 +97,13 @@ function drawGround() {
 
 function drawObstacles() {
   ctx.fillStyle = "#124a1f";
-  obstacles.forEach(obs => {
+  obstacles.forEach((obs) => {
     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
   });
 }
 
 function updateObstacles() {
-  obstacles.forEach(obs => {
+  obstacles.forEach((obs) => {
     obs.x -= speed;
   });
 
@@ -118,17 +123,18 @@ function updateObstacles() {
     }
   }
 
-  // Use dynamic gap based on score
-  let lastObstacleX = obstacles.length ? obstacles[obstacles.length - 1].x : canvas.width;
-  let minGap = score < 10 ? 250 : 150;
+  let lastObstacleX = obstacles.length
+    ? obstacles[obstacles.length - 1].x
+    : canvas.width;
 
-  if (obstacles.length === 0 || lastObstacleX < canvas.width - minGap) {
+  const gap = getGap();
+  if (obstacles.length === 0 || lastObstacleX < canvas.width - gap) {
     createObstacle();
   }
 }
 
 function showMilestoneMessage(score) {
-  let msg = milestoneSounds[(score / 10) % milestoneSounds.length | 0];
+  let msg = milestoneSounds[((score / 10) % milestoneSounds.length) | 0];
   milestoneMsg.textContent = msg;
   milestoneMsg.style.opacity = 1;
   setTimeout(() => {
@@ -181,11 +187,7 @@ function gameLoop() {
 
   if (checkCollision()) {
     gameOver = true;
-
-    // Vibrate for 500ms on game over if supported
-    if (navigator.vibrate) {
-      navigator.vibrate(500);
-    }
+    if (navigator.vibrate) navigator.vibrate(500);
 
     ctx.fillStyle = "#f9d71c";
     ctx.font = "24px Poppins, sans-serif";
@@ -203,7 +205,7 @@ function gameLoop() {
 
 // ========== EVENTS ==========
 
-document.addEventListener("keydown", e => {
+document.addEventListener("keydown", (e) => {
   if (e.code === "Enter") {
     if (!gameStarted || gameOver) {
       resetGame();
@@ -215,54 +217,75 @@ document.addEventListener("keydown", e => {
   }
 
   if ((e.code === "Space" || e.code === "ArrowUp") && gameStarted && !gameOver && !gamePaused) {
-    if (player.grounded) {
-      player.velocityY = JUMP;
-    }
+    if (player.grounded) player.velocityY = JUMP;
   }
 
-  if (e.code === "KeyP") {
-    togglePause();
-  }
+  if (e.code === "KeyP") togglePause();
 });
 
-canvas.addEventListener("touchstart", () => {
-  if (player.grounded && gameStarted && !gamePaused && !gameOver) {
+// Tap to start or jump on mobile
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  if (!gameStarted || gameOver) {
+    resetGame();
+    gameStarted = true;
+    gamePaused = false;
+    gameOver = false;
+    gameLoop();
+  } else if (player.grounded && !gamePaused) {
     player.velocityY = JUMP;
   }
 });
 
+// Buttons
 pauseBtn.addEventListener("click", togglePause);
 themeToggle.addEventListener("click", toggleTheme);
 fullscreenBtn.addEventListener("click", toggleFullscreen);
-
-function togglePause() {
-  gamePaused = !gamePaused;
-  pauseBtn.textContent = gamePaused ? "Resume" : "Pause";
-  if (!gamePaused) gameLoop();
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("light-mode");
-  themeToggle.textContent = document.body.classList.contains("light-mode")
-    ? "Dark Mode"
-    : "Light Mode";
-}
-
-function toggleFullscreen() {
-  const wrapper = document.getElementById("gameWrapper");
-  if (!document.fullscreenElement && wrapper.requestFullscreen) {
-    wrapper.requestFullscreen();
-  } else if (document.exitFullscreen) {
-    document.exitFullscreen();
-  }
-}
-
 followBtn.addEventListener("click", () => {
   window.open("https://www.instagram.com/mr_ajhacker/", "_blank");
 });
 
-window.addEventListener("resize", resizeCanvas);
+// Pause toggle
+function togglePause() {
+  gamePaused = !gamePaused;
+  pauseBtn.textContent = gamePaused ? "Resume" : "Pause";
+  pauseBtn.setAttribute("aria-pressed", gamePaused);
+  if (!gamePaused) gameLoop();
+}
 
+// Theme toggle
+function toggleTheme() {
+  const isLight = document.body.classList.toggle("light-mode");
+  themeToggle.textContent = isLight ? "Dark Mode" : "Light Mode";
+  themeToggle.setAttribute("aria-pressed", isLight);
+}
+
+// Fullscreen + Orientation Lock on mobile
+function toggleFullscreen() {
+  const wrapper = document.getElementById("gameWrapper");
+
+  if (!document.fullscreenElement) {
+    if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+
+    // Request landscape orientation if supported
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock("landscape").catch((err) => {
+        console.log("Orientation lock failed:", err);
+      });
+    }
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+}
+
+// Resize handler
+let resizeTimeout;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(resizeCanvas, 150);
+});
+
+// Init
 resetGame();
 resizeCanvas();
 gameLoop();
