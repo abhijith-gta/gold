@@ -10,7 +10,7 @@
   <div id="container">
     <h1>GOLDEN FLY</h1>
     <div id="gameWrapper">
-      <canvas id="gameCanvas"></canvas>
+      <canvas id="gameCanvas" tabindex="0"></canvas>
       <div id="scoreBoard">
         <p id="score">Score: 0</p>
         <p id="highScore">High Score: 0</p>
@@ -18,12 +18,14 @@
       </div>
     </div>
     <div class="controls">
-      <button id="pauseBtn">Pause</button>
-      <button id="themeToggle">Light Mode</button>
-      <button id="fullscreenBtn">Fullscreen</button>
+      <button id="pauseBtn" tabindex="0">Pause</button>
+      <button id="themeToggle" tabindex="0">Light Mode</button>
+      <button id="fullscreenBtn" tabindex="0">Fullscreen</button>
     </div>
-    <button id="followBtn">Follow me on Instagram</button>
+    <button id="followBtn" tabindex="0">Follow me on Instagram</button>
   </div>
   <script src="game.js"></script>
 </body>
 </html>
+
+
