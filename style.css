@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  transition: background 0.4s, color 0.4s;
+  background: linear-gradient(135deg, #1e2a47, #3a475e);
+  color: #f9d71c;
+}
+
+body.light-mode {
+  background: linear-gradient(135deg, #ffffff, #eeeeee);
+  color: #333;
+}
+
+#container {
+  text-align: center;
+  background: #121b2b;
+  padding: 20px 40px 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #f9d71ccc;
+  max-width: 95vw;
+  width: 520px;
+  transition: background 0.4s;
+}
+
+body.light-mode #container {
+  background: #ffffff;
+  box-shadow: 0 0 20px #ccc;
+}
+
+h1 {
+  margin: 0 0 20px;
+  font-size: 3rem;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px #f9d71c, 0 0 20px #f9d71c;
+}
+
+body.light-mode h1 {
+  text-shadow: none;
+  color: #333;
+}
+
+#gameWrapper {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+#gameCanvas {
+  background: #7bc7ff;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px #225577;
+  display: block;
+  margin: 0 auto;
+  user-select: none;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+
+#scoreBoard {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  text-align: left;
+  user-select: none;
+  color: #fff;
+  text-shadow: 0 0 4px #000;
+}
+
+#score,
+#highScore {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+#milestoneMsg {
+  margin-top: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  animation: flash 0.5s ease-in-out;
+}
+
+@keyframes flash {
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.controls {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  background: #f9d71c;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #121b2b;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 0 10px #f9d71caa;
+}
+
+button:hover {
+  background: #e1c513;
+}
+
+#followBtn {
+  margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.2rem;
+  }
+  button {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
