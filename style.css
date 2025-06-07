@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
@@ -8,9 +12,12 @@ body {
   align-items: center;
   height: 100vh;
   flex-direction: column;
-  transition: background 0.4s, color 0.4s;
   background: linear-gradient(135deg, #1e2a47, #3a475e);
   color: #f9d71c;
+  transition: background 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 body.light-mode {
@@ -26,7 +33,9 @@ body.light-mode {
   box-shadow: 0 0 20px #f9d71ccc;
   max-width: 95vw;
   width: 520px;
-  transition: background 0.4s;
+  transition: background 0.4s, box-shadow 0.4s;
+  user-select: none;
+  position: relative;
 }
 
 body.light-mode #container {
@@ -39,6 +48,7 @@ h1 {
   font-size: 3rem;
   letter-spacing: 0.1em;
   text-shadow: 0 0 8px #f9d71c, 0 0 20px #f9d71c;
+  user-select: none;
 }
 
 body.light-mode h1 {
@@ -49,6 +59,10 @@ body.light-mode h1 {
 #gameWrapper {
   position: relative;
   margin-bottom: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
 }
 
 #gameCanvas {
@@ -61,6 +75,7 @@ body.light-mode h1 {
   width: 100%;
   height: auto;
   aspect-ratio: 3 / 2;
+  max-height: 80vh;
 }
 
 #scoreBoard {
@@ -71,6 +86,9 @@ body.light-mode h1 {
   user-select: none;
   color: #fff;
   text-shadow: 0 0 4px #000;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  pointer-events: none;
 }
 
 #score,
@@ -85,12 +103,23 @@ body.light-mode h1 {
   font-size: 1rem;
   font-weight: bold;
   animation: flash 0.5s ease-in-out;
+  color: #ffea00;
+  text-shadow: 0 0 5px #ffea00, 0 0 10px #ffea00;
 }
 
 @keyframes flash {
-  0% { opacity: 0; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.1); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .controls {
@@ -110,24 +139,107 @@ button {
   font-size: 1rem;
   color: #121b2b;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.15s ease;
   box-shadow: 0 0 10px #f9d71caa;
+  user-select: none;
 }
 
-button:hover {
+button:hover,
+button:focus {
   background: #e1c513;
+  outline: none;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #f9d71c;
+}
+
+button:active {
+  transform: scale(0.95);
 }
 
 #followBtn {
   margin-top: 10px;
+  background: linear-gradient(45deg, #f9d71c, #e1c513);
+  box-shadow: 0 0 15px #f9d71ccc;
+  transition: box-shadow 0.3s ease;
 }
 
+#followBtn:hover {
+  box-shadow: 0 0 25px #f9d71cff;
+}
+
+/* Restart Button */
+#restartBtn {
+  background: #f44336;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #f44336aa;
+  transition: transform 0.15s ease, background-color 0.3s ease;
+  display: none;
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#restartBtn:hover {
+  background: #d32f2f;
+  transform: scale(1.05);
+}
+
+#restartBtn:active {
+  transform: scale(0.95);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Responsive Design */
 @media (max-width: 480px) {
   h1 {
     font-size: 2.2rem;
   }
+
   button {
     font-size: 0.9rem;
     padding: 8px 16px;
+  }
+
+  #gameCanvas {
+    aspect-ratio: 16 / 9;
+    max-height: 65vh;
+  }
+
+  #restartBtn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+
+/* Landscape phone adjustments */
+@media screen and (orientation: landscape) and (max-height: 480px) {
+  #container {
+    padding: 10px;
+    width: 100vw;
+    height: 100vh;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  #gameCanvas {
+    aspect-ratio: auto;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+  }
+
+  #scoreBoard {
+    font-size: 1rem;
   }
 }
